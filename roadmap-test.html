@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backend Developer Roadmap - Interactive Test</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --spine-color: #2563eb;
+      --dotted-color: #3b82f6;
+      --spine-yellow: #facc15;
+      --child-yellow: #fef08a;
+      --node-border: #1e293b;
+      --text: #0f172a;
+      --white-node: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+    #top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .brand-section { display: flex; align-items: center; gap: 12px; }
+    .brand-title { font-size: 17px; font-weight: 700; color: #1e293b; }
+    .controls { display: flex; align-items: center; gap: 16px; }
+    .search-box {
+      padding: 7px 14px;
+      font-size: 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      width: 220px;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus { border-color: var(--spine-color); }
+    .btn {
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #e2e8f0; }
+    .progress-wrap { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+    .progress-track {
+      width: 140px;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: #22c55e;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    #viewport {
+      width: 100vw;
+      height: calc(100vh - 64px);
+      margin-top: 64px;
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      background: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+    }
+    #viewport.dragging { cursor: grabbing; }
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      min-width: 1200px;
+      padding: 60px 40px;
+    }
+    #connectors-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .diagram-container {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 55px;
+    }
+    .section-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+    }
+    .side-branch {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-width: 440px;
+      padding: 0 35px;
+    }
+    .side-branch.left { justify-content: flex-end; }
+    .side-branch.right { justify-content: flex-start; }
+    .node-card {
+      border: 2px solid var(--node-border);
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-weight: 700;
+      font-size: 13.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+      background: var(--child-yellow);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .node-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.12);
+    }
+    .node-spine {
+      background: var(--spine-yellow);
+      font-size: 15px;
+      padding: 12px 28px;
+      min-width: 220px;
+      justify-content: center;
+    }
+    .node-outlined {
+      background: var(--white-node);
+      border: 2px dashed #64748b;
+      color: #334155;
+    }
+    .node-dimmed { opacity: 0.2; transform: scale(0.96); }
+    .node-highlight {
+      outline: 3px solid #2563eb;
+      outline-offset: 3px;
+    }
+    .badge-icon {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: white;
+      font-weight: bold;
+    }
+    .badge-green { background: #16a34a; }
+    .badge-purple { background: #9333ea; }
+    .badge-grey { background: #94a3b8; }
+    #tooltip {
+      position: fixed;
+      background: #1e293b;
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 2000;
+      display: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      max-width: 260px;
+    }
+    @media (max-width: 850px) {
+      .section-row { flex-direction: column; gap: 20px; }
+      .side-branch { justify-content: center !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="top-bar">
+    <div class="brand-section">
+      <span style="font-size: 22px;">🗺️</span>
+      <span class="brand-title">Backend Developer Roadmap</span>
+    </div>
+    <div class="controls">
+      <div class="progress-wrap">
+        <span>Completed:</span>
+        <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+        <span id="progress-text">0%</span>
+      </div>
+      <input type="text" id="search-input" class="search-box" placeholder="Search roadmap topics...">
+      <button id="btn-reset" class="btn">Reset View</button>
+    </div>
+  </div>
+
+  <div id="viewport">
+    <div id="canvas">
+      <svg id="connectors-svg"></svg>
+      <div id="diagram" class="diagram-container"></div>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script>
+    /* =====================================================================
+       1. DATA LAYER (REPLACE loadRoadmapData WITH YOUR LIVE API CALL LATER)
+       ===================================================================== */
+    function loadRoadmapData() {
+      // NOTE: To replace with real API (e.g., Anakin.io roadmap.sh API):
+      // return fetch("https://api.anakin.io/...").then(r => r.json());
+      return {
+        spineNodes: [
+          { id: "root", label: "Backend", type: "spine", status: "done", desc: "Core backend engineering foundations." },
+          { id: "intro", label: "Internet & Foundations", type: "spine", status: "done", desc: "How computers and the internet operate." },
+          { id: "frontend_basics", label: "Basic Frontend Knowledge", type: "spine", status: "purple", desc: "Understanding the client side." },
+          { id: "backend_lang", label: "Pick a Backend Language", type: "spine", status: "none", desc: "Select your primary programming language." },
+          { id: "vcs", label: "Version Control Systems", type: "spine", status: "done", desc: "Tracking and collaborating on code changes." },
+          { id: "databases", label: "Relational Databases", type: "spine", status: "grey", desc: "Structured data storage and querying." },
+          { id: "api_styles", label: "API Styles & Architecture", type: "outlined", status: "none", desc: "Standard architectures for web APIs." }
+        ],
+        branches: {
+          "intro": {
+            position: "right",
+            nodes: [
+              { id: "http", label: "HTTP / HTTPS", status: "done", desc: "Standard transfer protocol of the web." },
+              { id: "domain", label: "Domain Name", status: "done", desc: "Human readable address system." },
+              { id: "hosting", label: "Web Hosting", status: "done", desc: "Where server applications reside." },
+              { id: "dns", label: "DNS Basics", status: "done", desc: "Resolving domains to IP addresses." },
+              { id: "browsers", label: "How Browsers Work", status: "done", desc: "Rendering engines and network lifecycles." }
+            ]
+          },
+          "frontend_basics": {
+            position: "left",
+            nodes: [
+              { id: "html", label: "HTML5", status: "done", url: "https://developer.mozilla.org/en-US/docs/Web/HTML" },
+              { id: "css", label: "CSS3", status: "done", url: "https://developer.mozilla.org/en-US/docs/Web/CSS" },
+              { id: "js", label: "JavaScript", status: "purple", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript" }
+            ]
+          },
+          "backend_lang": {
+            position: "right",
+            nodes: [
+              { id: "py", label: "Python", status: "done", url: "https://www.python.org" },
+              { id: "node", label: "JavaScript (Node)", status: "purple", url: "https://nodejs.org" },
+              { id: "go", label: "Go", status: "none", desc: "Fast, compiled, concurrent language by Google." },
+              { id: "java", label: "Java", status: "none", desc: "Enterprise standard OOP language." },
+              { id: "csharp", label: "C#", status: "none", desc: "Microsoft modern typed language." },
+              { id: "ruby", label: "Ruby", status: "none", desc: "Productive language famous for Rails." },
+              { id: "php", label: "PHP", status: "none", desc: "Powers huge portion of web backends." },
+              { id: "rust", label: "Rust", status: "none", desc: "Memory-safe high performance systems language." }
+            ]
+          },
+          "vcs": {
+            position: "left",
+            nodes: [
+              { id: "git", label: "Git", status: "done", url: "https://git-scm.com" },
+              { id: "github", label: "GitHub", status: "done", url: "https://github.com" },
+              { id: "gitlab", label: "GitLab", status: "none", url: "https://gitlab.com" }
+            ]
+          },
+          "databases": {
+            position: "right",
+            nodes: [
+              { id: "mysql", label: "MySQL", status: "done", desc: "Popular open-source relational database." },
+              { id: "postgres", label: "PostgreSQL", status: "grey", desc: "Advanced extensible SQL database." }
+            ]
+          },
+          "api_styles": {
+            position: "left",
+            nodes: [
+              { id: "rest", label: "REST APIs", status: "done", desc: "Standard stateless client-server HTTP API." },
+              { id: "graphql", label: "GraphQL", status: "none", desc: "Query language for your APIs." },
+              { id: "grpc", label: "gRPC", status: "none", desc: "High performance binary RPC protocol." }
+            ]
+          }
+        }
+      };
+    }
+
+    /* =====================================================================
+       2. LAYOUT ENGINE (REUSABLE IN MAIN PROJECT)
+       ===================================================================== */
+    function buildLayout(data) {
+      return {
+        spineNodes: data.spineNodes,
+        branches: data.branches,
+        allNodesCount: data.spineNodes.length + Object.values(data.branches).reduce((acc, b) => acc + b.nodes.length, 0),
+        doneNodesCount: data.spineNodes.filter(n => n.status === "done" || n.status === "purple").length +
+          Object.values(data.branches).flatMap(b => b.nodes).filter(n => n.status === "done" || n.status === "purple").length
+      };
+    }
+
+    /* =====================================================================
+       3. RENDERER (DOM & SVG CONNECTOR LINES)
+       ===================================================================== */
+    function renderRoadmap(layout) {
+      const container = document.getElementById("diagram");
+      container.innerHTML = "";
+
+      layout.spineNodes.forEach((spineNode) => {
+        const row = document.createElement("div");
+        row.className = "section-row";
+        row.id = `row-${spineNode.id}`;
+
+        const branchInfo = layout.branches[spineNode.id];
+        const leftBranch = document.createElement("div");
+        leftBranch.className = "side-branch left";
+        const rightBranch = document.createElement("div");
+        rightBranch.className = "side-branch right";
+
+        const centerEl = createNodeElement(spineNode, true);
+
+        if (branchInfo) {
+          branchInfo.nodes.forEach(child => {
+            const childEl = createNodeElement(child, false);
+            if (branchInfo.position === "left") leftBranch.appendChild(childEl);
+            else rightBranch.appendChild(childEl);
+          });
+        }
+
+        row.appendChild(leftBranch);
+        row.appendChild(centerEl);
+        row.appendChild(rightBranch);
+        container.appendChild(row);
+      });
+
+      // Update progress bar
+      const pct = Math.round((layout.doneNodesCount / layout.allNodesCount) * 100);
+      document.getElementById("progress-fill").style.width = pct + "%";
+      document.getElementById("progress-text").textContent = pct + "%";
+
+      requestAnimationFrame(drawConnectors);
+    }
+
+    function createNodeElement(node, isSpine) {
+      const el = document.createElement("div");
+      el.id = `node-${node.id}`;
+      el.className = `node-card ${isSpine ? "node-spine" : ""}`;
+      if (node.type === "outlined") el.classList.add("node-outlined");
+      el.dataset.label = node.label.toLowerCase();
+      el.dataset.desc = node.desc || (node.url ? `Opens: ${node.url}` : "");
+      el.dataset.url = node.url || "";
+
+      // Badge indicator
+      let badgeHtml = "";
+      if (node.status === "done") badgeHtml = '<span class="badge-icon badge-green">✓</span>';
+      else if (node.status === "purple") badgeHtml = '<span class="badge-icon badge-purple">✓</span>';
+      else if (node.status === "grey") badgeHtml = '<span class="badge-icon badge-grey">−</span>';
+
+      el.innerHTML = `${badgeHtml}<span>${node.label}</span>`;
+      return el;
+    }
+
+    function drawConnectors() {
+      const svg = document.getElementById("connectors-svg");
+      const canvas = document.getElementById("canvas");
+      const canvasRect = canvas.getBoundingClientRect();
+      svg.setAttribute("width", canvas.offsetWidth);
+      svg.setAttribute("height", canvas.offsetHeight);
+      svg.innerHTML = "";
+
+      const spineElements = document.querySelectorAll(".node-spine, .node-outlined");
+      // 1. Central solid blue vertical spine
+      for (let i = 0; i < spineElements.length - 1; i++) {
+        const topEl = spineElements[i];
+        const botEl = spineElements[i + 1];
+        const tRect = topEl.getBoundingClientRect();
+        const bRect = botEl.getBoundingClientRect();
+
+        const x = (tRect.left + tRect.width / 2) - canvasRect.left;
+        const y1 = tRect.bottom - canvasRect.top;
+        const y2 = bRect.top - canvasRect.top;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x);
+        line.setAttribute("y1", y1);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", y2);
+        line.setAttribute("stroke", "#2563eb");
+        line.setAttribute("stroke-width", "3.5");
+        svg.appendChild(line);
+      }
+
+      // 2. Dotted blue branch connectors
+      const data = loadRoadmapData();
+      Object.keys(data.branches).forEach(spineId => {
+        const spineEl = document.getElementById(`node-${spineId}`);
+        if (!spineEl) return;
+        const sRect = spineEl.getBoundingClientRect();
+        const branchInfo = data.branches[spineId];
+
+        branchInfo.nodes.forEach(child => {
+          const childEl = document.getElementById(`node-${child.id}`);
+          if (!childEl) return;
+          const cRect = childEl.getBoundingClientRect();
+
+          let x1, y1, x2, y2;
+          if (branchInfo.position === "left") {
+            x1 = sRect.left - canvasRect.left;
+            y1 = (sRect.top + sRect.height / 2) - canvasRect.top;
+            x2 = cRect.right - canvasRect.left;
+            y2 = (cRect.top + cRect.height / 2) - canvasRect.top;
+          } else {
+            x1 = sRect.right - canvasRect.left;
+            y1 = (sRect.top + sRect.height / 2) - canvasRect.top;
+            x2 = cRect.left - canvasRect.left;
+            y2 = (cRect.top + cRect.height / 2) - canvasRect.top;
+          }
+
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          const dx = (x2 - x1) * 0.5;
+          const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+          path.setAttribute("d", d);
+          path.setAttribute("fill", "none");
+          path.setAttribute("stroke", "#3b82f6");
+          path.setAttribute("stroke-width", "2");
+          path.setAttribute("stroke-dasharray", "4,4");
+          svg.appendChild(path);
+        });
+      });
+    }
+
+    /* =====================================================================
+       4. INTERACTIONS (PAN, ZOOM, SEARCH, TOOLTIP, RESET)
+       ===================================================================== */
+    function attachInteractions() {
+      const viewport = document.getElementById("viewport");
+      const canvas = document.getElementById("canvas");
+      const tooltip = document.getElementById("tooltip");
+      const searchInput = document.getElementById("search-input");
+      const resetBtn = document.getElementById("btn-reset");
+
+      let scale = 1, panX = 40, panY = 20;
+      let isDragging = false, startX, startY;
+
+      function updateTransform() {
+        canvas.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+      }
+      updateTransform();
+
+      // Pan & Zoom
+      viewport.addEventListener("mousedown", (e) => {
+        if (e.target.closest(".node-card")) return;
+        isDragging = true;
+        viewport.classList.add("dragging");
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+      });
+      window.addEventListener("mousemove", (e) => {
+        if (!isDragging) return;
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        updateTransform();
+      });
+      window.addEventListener("mouseup", () => {
+        isDragging = false;
+        viewport.classList.remove("dragging");
+      });
+      viewport.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+        scale = Math.min(Math.max(scale * zoomFactor, 0.45), 2.2);
+        updateTransform();
+      }, { passive: false });
+
+      resetBtn.addEventListener("click", () => {
+        scale = 1; panX = 40; panY = 20;
+        updateTransform();
+        searchInput.value = "";
+        filterNodes("");
+      });
+
+      // Node Clicks & Tooltip
+      canvas.addEventListener("click", (e) => {
+        const card = e.target.closest(".node-card");
+        if (!card) return;
+        const url = card.dataset.url;
+        if (url) window.open(url, "_blank");
+      });
+
+      canvas.addEventListener("mousemove", (e) => {
+        const card = e.target.closest(".node-card");
+        if (card && card.dataset.desc) {
+          tooltip.textContent = card.dataset.desc;
+          tooltip.style.display = "block";
+          tooltip.style.left = (e.clientX + 14) + "px";
+          tooltip.style.top = (e.clientY + 14) + "px";
+        } else {
+          tooltip.style.display = "none";
+        }
+      });
+      canvas.addEventListener("mouseleave", () => tooltip.style.display = "none");
+
+      // Search Filter
+      searchInput.addEventListener("input", (e) => filterNodes(e.target.value.toLowerCase().trim()));
+
+      function filterNodes(query) {
+        document.querySelectorAll(".node-card").forEach(node => {
+          if (!query) {
+            node.classList.remove("node-dimmed", "node-highlight");
+            return;
+          }
+          if (node.dataset.label.includes(query)) {
+            node.classList.remove("node-dimmed");
+            node.classList.add("node-highlight");
+          } else {
+            node.classList.add("node-dimmed");
+            node.classList.remove("node-highlight");
+          }
+        });
+      }
+
+      window.addEventListener("resize", drawConnectors);
+    }
+
+    // Initialize application
+    window.addEventListener("DOMContentLoaded", () => {
+      const data = loadRoadmapData();
+      const layout = buildLayout(data);
+      renderRoadmap(layout);
+      attachInteractions();
+    });
+  </script>
+</body>
+</html>

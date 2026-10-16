@@ -44,3 +44,17 @@ def test_normalization():
     gap = calculate_skill_gap(req, curr)
     assert gap[0]["gap"] == 2
     assert gap[0]["skill"] == "Python"
+
+def test_dependency_order_overrides_gap_size():
+    required = {"Python": 5, "SQL": 1, "Excel": 3}
+    current = {"Python": 0, "SQL": 0, "Excel": 0}
+    gaps = calculate_skill_gap(
+        required, current, ["SQL", "Excel", "Python"]
+    )
+    assert [item["skill"] for item in gaps] == ["SQL", "Excel", "Python"]
+
+def test_rejects_levels_outside_supported_range():
+    with pytest.raises(ValueError, match="Invalid required skill level"):
+        calculate_skill_gap({"Python": 6}, {})
+    with pytest.raises(ValueError, match="Invalid current skill level"):
+        calculate_skill_gap({"Python": 1}, {"Python": -1})

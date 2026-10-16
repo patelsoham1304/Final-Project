@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Pytest / Cache
+.pytest_cache/
+CACHEDIR.TAG
+
+# Virtual environments
+v/
+venv/
+env/
+.env
+
+# Streamlit
+.streamlit/secrets.toml
+
+# SQLite Database local runtime files
+data/*.db-journal
+data/*.db-shm
+data/*.db-wal
+*.pyc

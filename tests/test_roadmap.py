@@ -31,3 +31,11 @@ def test_generate_roadmap_no_gap():
 def test_generate_roadmap_invalid_level():
     with pytest.raises(ValueError):
         generate_roadmap({"A": -1}, {})
+
+def test_roadmap_uses_dependency_order_instead_of_gap_size():
+    roadmap = generate_roadmap(
+        {"Python": 5, "SQL": 1, "Excel": 3},
+        {"Python": 0, "SQL": 0, "Excel": 0},
+        ["SQL", "Excel", "Python"],
+    )
+    assert [step["skill"] for step in roadmap] == ["SQL", "Excel", "Python"]

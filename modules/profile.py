@@ -1,7 +1,34 @@
-def _mock_get_student(student_id: int) -> dict:
-    # TEMP MOCK — remove once database layer ready
-    return {"id": student_id, "name": "Alice", "current_skills": {"Python": 2, "SQL": 3}}
+"""Student-profile operations."""
 
-def get_student_profile(student_id: int) -> dict:
-    """Get the profile of a student."""
-    return _mock_get_student(student_id)
+import sqlite3
+
+from database.db import create_student, get_student, get_students, update_student
+
+
+def create_student_profile(name: str, email: str | None = None) -> int:
+    """Validate and save a student profile."""
+    return create_student(name, email)
+
+
+def get_student_profile(student_id: int) -> sqlite3.Row:
+    """Load one saved student profile by database ID."""
+    if isinstance(student_id, bool) or not isinstance(student_id, int) or student_id <= 0:
+        raise ValueError("Student ID must be a positive integer.")
+    student = get_student(student_id)
+    if student is None:
+        raise ValueError("Student was not found.")
+    return student
+
+
+def list_student_profiles() -> list[sqlite3.Row]:
+    """List the profiles available for the single-active-profile selector."""
+    return get_students()
+
+
+def update_student_profile(
+    student_id: int, name: str, email: str | None = None
+) -> None:
+    """Update a saved student profile."""
+    if isinstance(student_id, bool) or not isinstance(student_id, int) or student_id <= 0:
+        raise ValueError("Student ID must be a positive integer.")
+    update_student(student_id, name, email)

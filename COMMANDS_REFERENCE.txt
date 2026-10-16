@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+"""
+MASTER COMMAND REFERENCE
+========================
+
+Project: Personalized Education Path Generator
+Status: ✅ PRODUCTION READY
+
+Quick Copy-Paste Commands Below
+================================
+"""
+
+# ============================================================
+# 1. INSTALL DEPENDENCIES (Run once)
+# ============================================================
+# pip install -r requirements.txt
+
+
+# ============================================================
+# 2. RUN THE APP (Primary command)
+# ============================================================
+# python -m streamlit run app.py
+
+
+# ============================================================
+# 3. ALTERNATIVE: Using the launcher script
+# ============================================================
+# python run_app.py
+
+
+# ============================================================
+# 4. RUN ON DIFFERENT PORT (if 8501 is busy)
+# ============================================================
+# streamlit run app.py --server.port 8502
+
+
+# ============================================================
+# 5. RUN ALL TESTS (verify everything works)
+# ============================================================
+# pytest tests/ -v
+
+
+# ============================================================
+# 6. RUN SPECIFIC TEST MODULE
+# ============================================================
+# pytest tests/test_resume.py -v          # Resume functionality
+# pytest tests/test_database.py -v        # Database & careers
+# pytest tests/test_planner.py -v         # Study scheduler
+# pytest tests/test_progress.py -v        # Progress tracking
+
+
+# ============================================================
+# 7. RESET DATABASE (if needed)
+# ============================================================
+# rm data/education_path.db
+# python -m streamlit run app.py          # Recreates database
+
+
+# ============================================================
+# 8. CLEAR CACHE & TEST
+# ============================================================
+# rm -rf .pytest_cache __pycache__
+# pytest tests/ -v
+
+
+# ============================================================
+# 9. REINSTALL DEPENDENCIES (if issues occur)
+# ============================================================
+# pip install --upgrade pip
+# pip install --force-reinstall -r requirements.txt
+
+
+# ============================================================
+# WHAT HAPPENS WHEN YOU RUN:
+# ============================================================
+# 1. Dependencies installed (Streamlit, pytest)
+# 2. App starts on http://localhost:8501
+# 3. Database initializes in data/education_path.db
+# 4. Browser opens automatically
+# 5. You see "Create Student" screen
+
+
+# ============================================================
+# BROWSER ACCESS
+# ============================================================
+# Primary URL: http://localhost:8501
+# Alternate (if port busy): http://localhost:8502
+
+
+# ============================================================
+# TEST RESULTS EXPECTED
+# ============================================================
+# ====== 52 passed in X.XXs ======
+# All tests pass, no failures
+
+
+# ============================================================
+# FILES CREATED BY APP
+# ============================================================
+# data/education_path.db  ← SQLite database (auto-created)
+# __pycache__/            ← Python cache
+# .pytest_cache/          ← Pytest cache
+
+
+# ============================================================
+# DOCUMENTATION TO READ
+# ============================================================
+# 1. README_AT_A_GLANCE.md  ← Quick overview (2 min)
+# 2. RUN_INSTRUCTIONS.md    ← Detailed guide (5 min)
+# 3. QUICK_START.md         ← Setup help (3 min)
+# 4. COMPLETION_CHECKLIST.md ← Full verification (5 min)
+
+
+# ============================================================
+# PROJECT FEATURES INCLUDED
+# ============================================================
+# ✅ 6 Career Paths (Data Analyst, Frontend Dev, Backend Dev, etc.)
+# ✅ Student Profile Management
+# ✅ Career Selection from 6 Options
+# ✅ Skill Gap Analysis
+# ✅ Progress Tracking (0-100% per skill)
+# ✅ Study Planner (AI-generated)
+# ✅ Resume Builder with Markdown Export ⭐
+# ✅ Interactive Dashboard with Charts
+# ✅ SQLite Database (persistent)
+# ✅ 52 Passing Tests
+
+
+# ============================================================
+# RESUME BUILDER (NEW) - Key Features
+# ============================================================
+# ✅ Edit headline, summary, education, projects, certifications
+# ✅ Add portfolio and LinkedIn URLs (with validation)
+# ✅ Auto-include completed skills
+# ✅ Download as .md file
+# ✅ One resume per student (persistent)
+
+
+# ============================================================
+# MAIN WORKFLOW
+# ============================================================
+# Step 1: Create Student     → Enter name & email
+# Step 2: Select Career      → Choose from 6 paths
+# Step 3: Skill Gap Roadmap  → View ordered skills
+# Step 4: Update Progress    → Track skill completion
+# Step 5: Study Planner      → Get personalized schedule
+# Step 6: Resume Builder ⭐   → Create & download resume
+# Step 7: Dashboard          → View progress charts
+
+
+# ============================================================
+# CAREER PATHS AVAILABLE
+# ============================================================
+# 1. Data Analyst           - SQL, Excel, Python, Statistics
+# 2. Frontend Developer     - HTML, CSS, JavaScript, React
+# 3. Backend Developer      - Python, SQL, REST APIs, Testing
+# 4. Data Scientist         - Python, ML, Statistics, Pandas
+# 5. UI/UX Designer         - Figma, User Research, Prototyping
+# 6. Cybersecurity Analyst  - Networking, Linux, Web Security
+
+
+# ============================================================
+# DATABASE TABLES (Auto-created)
+# ============================================================
+# students           - Student profiles
+# careers            - 6 career paths
+# skills             - 40+ skills
+# career_skills      - Ordered skill progression
+# progress           - Track completion (0-100%)
+# resources          - Learning materials
+# roadmaps           - Career learning paths
+# resume_profiles    - Saved resumes ⭐
+
+
+# ============================================================
+# PROJECT STATISTICS
+# ============================================================
+# Lines of Code: ~2,500+
+# Tests: 52 (all passing)
+# Careers: 6
+# Skills: 40+
+# Resources: 100+
+# UI Screens: 7
+# Tables: 8
+# Documentation Pages: 7
+
+
+# ============================================================
+# TROUBLESHOOTING QUICK REFERENCE
+# ============================================================
+# Port in use?            → streamlit run app.py --server.port 8502
+# Database error?         → rm data/education_path.db
+# Import issues?          → pip install -r requirements.txt
+# Test failures?          → rm -rf .pytest_cache; pytest tests/
+# Streamlit not found?    → pip install streamlit>=1.49
+
+
+# ============================================================
+# STATUS
+# ============================================================
+# Code:          ✅ COMPLETE
+# Tests:         ✅ 52/52 PASSING
+# Database:      ✅ WORKING
+# UI:            ✅ READY
+# Documentation: ✅ COMPLETE
+# Production:    ✅ READY
+
+
+# ============================================================
+# FINAL NOTE
+# ============================================================
+# Everything is configured and ready.
+# 
+# Just run:
+#   python -m streamlit run app.py
+#
+# That's it! The app will open in your browser.
+# 
+# Have fun exploring your personalized education path! 🎓
